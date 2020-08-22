@@ -461,70 +461,8 @@ func (video *Video) Download(index int, filename string, option *Option) error {
 	// Not using range requests by default, because Youtube is throttling
 	// download speed. Using a single GET request for max speed.
 	start := time.Now()
-	resp, err := http.Get(url)
-	if err != nil {
-		return fmt.Errorf("Request failed: %s", err)
-	}
-	defer resp.Body.Close()
-
-	if length, err = io.Copy(out, resp.Body); err != nil {
-		return err
-	}
-
-	// Download stats
-	duration := time.Now().Sub(start)
-	speed := float64(length) / float64(duration/time.Second)
-	if duration > time.Second {
-		duration -= duration % time.Second
-	} else {
-		speed = float64(length)
-	}
-
-	if option.Rename {
-		// Rename output file using video title
-		wspace := regexp.MustCompile(`\W+`)
-		fname := strings.Split(filename, ".")[0]
-		ext := filepath.Ext(filename)
-		title := wspace.ReplaceAllString(video.Title, "-")
-		if len(title) > 64 {
-			title = title[:64]
-		}
-		title = strings.TrimRight(strings.ToLower(title), "-")
-		video.Filename = fmt.Sprintf("%s-%s%s", fname, title, ext)
-		if err := os.Rename(filename, video.Filename); err != nil {
-			fmt.Println("Failed to rename output file:", err)
-		}
-	}
-
-	// Extract audio from downloaded video using ffmpeg
-	if option.Mp3 {
-		if err := out.Close(); err != nil {
-			fmt.Println("Error:", err)
-		}
-		ffmpeg, err := exec.LookPath("ffmpeg")
-		if err != nil {
-			fmt.Println("ffmpeg not found")
-		} else {
-			fmt.Println("Extracting audio ..")
-			fname := video.Filename
-			mp3 := strings.TrimRight(fname, filepath.Ext(fname)) + ".mp3"
-			cmd := exec.Command(ffmpeg, "-y", "-loglevel", "quiet", "-i", fname, "-vn", mp3)
-			cmd.Stdin = os.Stdin
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				fmt.Println("Failed to extract audio:", err)
-			} else {
-				fmt.Println()
-				fmt.Println("Extracted audio:", mp3)
-			}
-		}
-	}
-
-	fmt.Printf("Download duration: %s\n", duration)
-	fmt.Printf("Average speed: %s/s\n", abbr(int64(speed)))
-
-	return nil
+	
+	return url
 }
 
 func abbr(byteSize int64) string {
