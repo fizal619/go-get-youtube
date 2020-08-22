@@ -394,69 +394,8 @@ func Get(video_id string) (Video, error) {
 	return *meta, nil
 }
 
-func (video *Video) Download(index int, filename string, option *Option) string {
-	var (
-		out    *os.File
-		err    error
-		offset int64
-		length int64
-	)
-
-	if option.Resume {
-		// Resume download from last known offset
-		flags := os.O_WRONLY | os.O_CREATE
-		out, err = os.OpenFile(filename, flags, 0644)
-		if err != nil {
-			return fmt.Errorf("Unable to open file %q: %s", filename, err)
-		}
-		offset, err = out.Seek(0, os.SEEK_END)
-		if err != nil {
-			return fmt.Errorf("Unable to seek file %q: %s", filename, err)
-		}
-		fmt.Printf("Resuming from offset %d (%s)\n", offset, abbr(offset))
-
-	} else {
-		// Start new download
-		flags := os.O_WRONLY | os.O_CREATE | os.O_TRUNC
-		out, err = os.OpenFile(filename, flags, 0644)
-		if err != nil {
-			return fmt.Errorf("Unable to write to file %q: %s", filename, err)
-		}
-	}
-
-	defer out.Close()
-
+func (video *Video) Download(index int) string {
 	url := video.Formats[index].Url
-	video.Filename = filename
-
-	// Get video content length
-	if resp, err := http.Head(url); err != nil {
-		return fmt.Errorf("Head request failed: %s", err)
-	} else {
-		if resp.StatusCode == 403 {
-			return errors.New("Head request failed: Video is 403 forbidden")
-		}
-
-		if size := resp.Header.Get("Content-Length"); len(size) == 0 {
-			return errors.New("Content-Length header is missing")
-		} else if length, err = strconv.ParseInt(size, 10, 64); err != nil {
-			return fmt.Errorf("Invalid Content-Length: %s", err)
-		}
-
-		if length <= offset {
-			fmt.Println("Video file is already downloaded.")
-			return nil
-		}
-	}
-
-	if length > 0 {
-		go printProgress(out, offset, length)
-	}
-
-	// Not using range requests by default, because Youtube is throttling
-	// download speed. Using a single GET request for max speed.
-	start := time.Now()
-	
 	return url
 }
 
