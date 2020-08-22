@@ -16,14 +16,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
-	"path/filepath"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -399,7 +394,7 @@ func Get(video_id string) (Video, error) {
 	return *meta, nil
 }
 
-func (video *Video) Download(index int, filename string, option *Option) error {
+func (video *Video) Download(index int, filename string, option *Option) string {
 	var (
 		out    *os.File
 		err    error
