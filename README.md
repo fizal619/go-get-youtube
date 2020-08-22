@@ -1,20 +1,15 @@
 # go-get-youtube v 0.2
 A tiny Go library + client (command line Youtube video downloader) for downloading Youtube videos. The library is capable of fetching Youtube video metadata, in addition to downloading videos. If ffmpeg is available, client can extract MP3 audio from downloaded video files.
 
-Kailash Nadh, http://nadh.in --
-27 February 2014
-
-License: GPL v2
-
 # Client
-Once you have compiled or [downloaded](https://github.com/knadh/go-get-youtube/releases) the binary, simply run the following on your terminal:
+Once you have compiled or [downloaded](https://github.com/fizal619/go-get-youtube/releases) the binary, simply run the following on your terminal:
 
 `ytdownload -id=youtube_video_id`
 
 ## Building
 ```
 $ export GOPATH=$PWD/go-get-youtube
-$ go get github.com/knadh/go-get-youtube
+$ go get github.com/fizal619/go-get-youtube
 $ cd go-get-youtube/bin
 $ ./go-get-youtube -id=cN_DpYBzKso -itag 18 -rename -mp3
 
@@ -65,7 +60,7 @@ Guesses the file extension (avi, 3gp, mp4, webm) based on the format chosen
 ## Example
 ```go
 import (
-	youtube "github.com/knadh/go-get-youtube/youtube"
+	youtube "github.com/fizal619/go-get-youtube/youtube"
 )
 
 func main() {
